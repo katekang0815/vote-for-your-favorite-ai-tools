@@ -13,8 +13,12 @@ export const EmailSubscription = () => {
   const { toast } = useToast();
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
+    console.log('Email form submitted', { email });
     e.preventDefault();
-    if (!email) return;
+    if (!email) {
+      console.log('Email submission blocked: no email provided');
+      return;
+    }
 
     // Check for duplicate email
     if (submittedEmails.has(email.toLowerCase())) {
@@ -29,6 +33,7 @@ export const EmailSubscription = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Attempting to submit email to Supabase:', email);
       // Submit email to Supabase
       const { error } = await supabase
         .from('email_submissions')
@@ -39,10 +44,11 @@ export const EmailSubscription = () => {
         }]);
 
       if (error) {
+        console.error('Supabase error:', error);
         throw error;
       }
 
-      // Add email to submitted set to prevent duplicates
+      console.log('Email submitted successfully to Supabase');
       setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
       toast({
