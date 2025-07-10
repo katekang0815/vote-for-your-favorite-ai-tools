@@ -114,7 +114,7 @@ export const EmailSubscription = () => {
         </div>
         <Button
           type="submit"
-          disabled={isSubmitting || !email}
+          disabled={isSubmitting}
           className={`px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap ${
             submissionStatus === 'success' 
               ? 'bg-green-500 hover:bg-green-600 text-white' 
