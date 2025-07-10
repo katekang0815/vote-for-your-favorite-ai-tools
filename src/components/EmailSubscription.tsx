@@ -63,7 +63,7 @@ export const EmailSubscription = () => {
       setEmail("");
 
       toast({
-        title: "Success! 🎉",
+        title: "Success!",
         description: "Your email has been submitted successfully. Thank you for subscribing!",
         variant: "default",
       });
@@ -79,7 +79,7 @@ export const EmailSubscription = () => {
         : 'Failed to submit email. Please check your connection and try again.';
       
       toast({
-        title: "Submission Failed ❌",
+        title: "Submission Failed",
         description: errorMessage,
         variant: "destructive",
       });
