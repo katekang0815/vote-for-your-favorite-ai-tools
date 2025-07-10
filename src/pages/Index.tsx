@@ -153,7 +153,7 @@ const Index = () => {
 
   return (
     <section className="hero-gradient min-h-screen flex items-center justify-center px-2 sm:px-4 py-8 sm:py-12 md:py-16">
-      <div className="max-w-6xl mx-auto text-center relative z-10 w-full">
+      <div className="w-full max-w-screen-2xl mx-auto text-center relative z-10">
         {/* Hero Content */}
         <div className="mb-8 sm:mb-12 md:mb-16">
           <div className="mb-6 sm:mb-8 max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto h-12 sm:h-14 md:h-16 lg:h-18 xl:h-20 flex items-center justify-center px-4">
