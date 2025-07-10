@@ -40,7 +40,20 @@ All colors MUST be HSL.
     --like-button: 0 84% 60%;
     --like-count: 158 64% 52%;
 
-    --radius: 0.5rem;
+  --radius: 0.5rem;
+}
+
+/* Gradient and animation classes */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
 
     --sidebar-background: 0 0% 98%;
 
