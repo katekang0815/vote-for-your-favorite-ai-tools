@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { EmailSubscription } from "@/components/EmailSubscription";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Tool {
   id: string;
@@ -29,14 +30,38 @@ const tools: Tool[] = [
 
 const Index = () => {
   const [userLikes, setUserLikes] = useState<UserLike[]>([]);
-  const [currentUserId] = useState("user-1"); // Simulating a logged-in user
+  const [voteCounts, setVoteCounts] = useState<Record<string, number>>({});
+  const [currentUserId] = useState("anonymous-user"); // Anonymous user
 
-  // Initialize user likes from localStorage
+  // Initialize user likes from localStorage and load vote counts from Supabase
   useEffect(() => {
     const savedLikes = localStorage.getItem(`userLikes-${currentUserId}`);
     if (savedLikes) {
       setUserLikes(JSON.parse(savedLikes));
     }
+
+    // Load vote counts from Supabase
+    const loadVoteCounts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tool_votes')
+          .select('tool_id, vote_count');
+
+        if (error) {
+          console.error('Error loading vote counts:', error);
+        } else if (data) {
+          const counts = data.reduce((acc, row) => {
+            acc[row.tool_id] = row.vote_count;
+            return acc;
+          }, {} as Record<string, number>);
+          setVoteCounts(counts);
+        }
+      } catch (error) {
+        console.error('Error fetching vote counts:', error);
+      }
+    };
+
+    loadVoteCounts();
   }, [currentUserId]);
 
   // Save user likes to localStorage whenever they change
@@ -44,11 +69,15 @@ const Index = () => {
     localStorage.setItem(`userLikes-${currentUserId}`, JSON.stringify(userLikes));
   }, [userLikes, currentUserId]);
 
-  const handleToggleLike = (toolId: string) => {
+  const handleToggleLike = async (toolId: string) => {
+    const existingLike = userLikes.find(like => like.toolId === toolId);
+    const wasLiked = existingLike?.liked || false;
+
+    // Update local state immediately for responsiveness
     setUserLikes(prev => {
-      const existingLike = prev.find(like => like.toolId === toolId);
+      const existing = prev.find(like => like.toolId === toolId);
       
-      if (existingLike) {
+      if (existing) {
         // Toggle existing like
         return prev.map(like => 
           like.toolId === toolId 
@@ -60,21 +89,34 @@ const Index = () => {
         return [...prev, { toolId, liked: true }];
       }
     });
+
+    // If toggling to liked state, increment vote in Supabase
+    if (!wasLiked) {
+      try {
+        const { data, error } = await supabase.rpc('increment_tool_vote', {
+          tool_id_param: toolId
+        });
+
+        if (error) {
+          console.error('Error incrementing vote:', error);
+        } else {
+          // Update local vote count
+          setVoteCounts(prev => ({ ...prev, [toolId]: data }));
+        }
+      } catch (error) {
+        console.error('Error calling increment function:', error);
+      }
+    }
   };
 
   const getLikeCount = (toolId: string) => {
     const tool = tools.find(t => t.id === toolId);
-    const userLike = userLikes.find(like => like.toolId === toolId);
+    const supabaseVotes = voteCounts[toolId] || 0;
     
-    if (!tool) return 0;
+    if (!tool) return supabaseVotes;
     
-    // Start with initial likes and adjust based on user's like status
-    let count = tool.initialLikes;
-    if (userLike?.liked) {
-      count += 1;
-    }
-    
-    return count;
+    // Combine initial likes with Supabase votes
+    return tool.initialLikes + supabaseVotes;
   };
 
   const isLiked = (toolId: string) => {

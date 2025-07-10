@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const EmailSubscription = () => {
   const [email, setEmail] = useState("");
@@ -28,33 +29,35 @@ export const EmailSubscription = () => {
     setIsSubmitting(true);
 
     try {
-      // Use GET method with query parameters - most reliable for Google Apps Script
-      const url = `https://script.google.com/macros/s/AKfycbwmqGk8EgDszcoukq2WTr5RDP2UvcDgCpd7pdAstS4DshIzD15djubo1rWSoKBb3Zix/exec?email=${encodeURIComponent(email)}`;
+      // Submit email to Supabase
+      const { error } = await supabase
+        .from('email_submissions')
+        .insert([{ 
+          email: email.toLowerCase(),
+          ip_address: null, // Could be captured if needed
+          user_agent: navigator.userAgent
+        }]);
 
-      const response = await fetch(url, {
-        method: "GET",
-        mode: "no-cors",
-      });
+      if (error) {
+        throw error;
+      }
 
       // Add email to submitted set to prevent duplicates
       setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
       toast({
-        title: "🎉 Successfully Subscribed!",
-        description: "Thank you for subscribing! You'll receive updates about our latest tools and features.",
+        title: "Success!",
+        description: "Your email has been submitted successfully.",
         variant: "default",
       });
       setEmail("");
     } catch (error) {
-      // Add email to submitted set even on error since request likely went through
-      setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
-
+      console.error('Error submitting email:', error);
       toast({
-        title: "⚠️ Submission Error",
-        description: "There was an issue submitting your email. Please try again later.",
+        title: "Error",
+        description: "Failed to submit email. Please try again.",
         variant: "destructive",
       });
-      setEmail("");
     } finally {
       setIsSubmitting(false);
     }

@@ -14,13 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      email_submissions: {
+        Row: {
+          email: string
+          id: string
+          ip_address: unknown | null
+          submitted_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          ip_address?: unknown | null
+          submitted_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          ip_address?: unknown | null
+          submitted_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      tool_votes: {
+        Row: {
+          id: string
+          last_updated: string
+          tool_id: string
+          vote_count: number
+        }
+        Insert: {
+          id?: string
+          last_updated?: string
+          tool_id: string
+          vote_count?: number
+        }
+        Update: {
+          id?: string
+          last_updated?: string
+          tool_id?: string
+          vote_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_tool_vote: {
+        Args: { tool_id_param: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
