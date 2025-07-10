@@ -2,7 +2,7 @@
 
 **Preference tracker for AI tools with seamless email collection**
 
-🔗 [Live Demo] https://vote-for-your-favorite-ai-tools.lovable.app/
+🔗 [Live Demo]([https://vibe-toolkit-yehsunkang.replit.app/](https://vote-for-your-favorite-ai-tools.lovable.app/))
 
 ---
 
