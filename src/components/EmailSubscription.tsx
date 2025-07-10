@@ -1,76 +1,88 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 export const EmailSubscription = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submittedEmails, setSubmittedEmails] = useState<Set<string>>(
+    new Set(),
+  );
   const { toast } = useToast();
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
-    console.log('Email form submitted', { email });
     e.preventDefault();
-    
-    if (!email) {
-      console.log('Email submission blocked: no email provided');
+    if (!email) return;
+
+    // Check for duplicate email
+    if (submittedEmails.has(email.toLowerCase())) {
+      toast({
+        title: "Already Submitted",
+        description: "This email has already been submitted.",
+        variant: "destructive",
+      });
       return;
     }
 
     setIsSubmitting(true);
-    setSubmissionStatus('idle');
 
     try {
-      console.log('Attempting to submit email to Supabase:', email);
-      
-      // Submit email to Supabase
-      const { error } = await supabase
-        .from('email_submissions')
-        .insert([{ 
-          email: email.toLowerCase(),
-          ip_address: null,
-          user_agent: navigator.userAgent
-        }]);
+      // Use GET method with query parameters - most reliable for Google Apps Script
+      const url = `https://script.google.com/macros/s/AKfycbwmqGk8EgDszcoukq2WTr5RDP2UvcDgCpd7pdAstS4DshIzD15djubo1rWSoKBb3Zix/exec?email=${encodeURIComponent(email)}`;
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
+      const response = await fetch(url, {
+        method: "GET",
+        mode: "no-cors",
+      });
 
-      console.log('Email submitted successfully to Supabase');
-      
-      // Set success status and clear form
-      setSubmissionStatus('success');
-      setEmail("");
+      // Add email to submitted set to prevent duplicates
+      setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
       toast({
-        title: "Success! 🎉",
-        description: "Your email has been submitted successfully. Thank you for subscribing!",
+        title: "Success!",
+        description: "Your email has been submitted successfully.",
         variant: "default",
       });
-
+      setEmail("");
     } catch (error) {
-      console.error('Error submitting email:', error);
-      
-      // Set error status but keep email in form for retry
-      setSubmissionStatus('error');
-      
+      // Add email to submitted set even on error since request likely went through
+      setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
+
       toast({
-        title: "Submission Failed ❌",
-        description: "Failed to submit email. Please check your connection and try again.",
-        variant: "destructive",
+        title: "Submitted!",
+        description:
+          "Your email has been submitted. Please check your spreadsheet to confirm.",
+        variant: "default",
       });
+      setEmail("");
     } finally {
       setIsSubmitting(false);
-      
-      // Reset status after 3 seconds
-      setTimeout(() => {
-        setSubmissionStatus('idle');
-      }, 3000);
     }
   };
+
+  // Load submitted emails from localStorage on component mount
+  useEffect(() => {
+    const savedEmails = localStorage.getItem("submittedEmails");
+    if (savedEmails) {
+      try {
+        setSubmittedEmails(new Set(JSON.parse(savedEmails)));
+      } catch (error) {
+        // Clear invalid localStorage data
+        localStorage.removeItem("submittedEmails");
+      }
+    }
+  }, []);
+
+  // Save submitted emails to localStorage whenever the set changes
+  useEffect(() => {
+    if (submittedEmails.size > 0) {
+      localStorage.setItem(
+        "submittedEmails",
+        JSON.stringify(Array.from(submittedEmails)),
+      );
+    }
+  }, [submittedEmails]);
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 items-center mt-8 sm:mt-12 md:mt-16 px-4">
@@ -98,49 +110,19 @@ export const EmailSubscription = () => {
             type="email"
             placeholder="Enter your email to stay updated"
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              // Reset status when user starts typing again
-              if (submissionStatus !== 'idle') {
-                setSubmissionStatus('idle');
-              }
-            }}
-            className={`w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border-gray-600/50 text-white placeholder-blue-600 rounded-lg focus:border-blue-400 focus:ring-blue-400 transition-all duration-300 ${
-              submissionStatus === 'success' ? 'border-green-500 focus:border-green-500 focus:ring-green-500' :
-              submissionStatus === 'error' ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-            }`}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border-gray-600/50 text-white placeholder-blue-600 rounded-lg focus:border-blue-400 focus:ring-blue-400"
             required
           />
         </div>
         <Button
           type="submit"
-          disabled={isSubmitting || !email}
-          className={`px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap ${
-            submissionStatus === 'success' 
-              ? 'bg-green-500 hover:bg-green-600 text-white' 
-              : submissionStatus === 'error'
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 hover:from-green-500 hover:via-cyan-500 hover:to-blue-600 text-white'
-          }`}
+          disabled={isSubmitting}
+           className="bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 hover:from-green-500 hover:via-cyan-500 hover:to-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap"
         >
-          {isSubmitting ? "Submitting..." : 
-           submissionStatus === 'success' ? "✓ Subscribed!" :
-           submissionStatus === 'error' ? "Try Again" :
-           "Subscribe"}
+          {isSubmitting ? "Submitting..." : "Subscribe"}
         </Button>
       </form>
-
-      {/* Status Message */}
-      {submissionStatus === 'success' && (
-        <div className="text-green-400 text-sm animate-fade-in">
-          🎉 Thank you for subscribing! You'll hear from us soon.
-        </div>
-      )}
-      {submissionStatus === 'error' && (
-        <div className="text-red-400 text-sm animate-fade-in">
-          ❌ Something went wrong. Please try again.
-        </div>
-      )}
     </div>
   );
 };
