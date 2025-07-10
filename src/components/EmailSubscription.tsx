@@ -25,6 +25,23 @@ export const EmailSubscription = () => {
     try {
       console.log('Attempting to submit email to Supabase:', email);
       
+      // Check if email already exists
+      const { data: existingEmail, error: checkError } = await supabase
+        .from('email_submissions')
+        .select('email')
+        .eq('email', email.toLowerCase())
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking existing email:', checkError);
+        throw checkError;
+      }
+
+      if (existingEmail) {
+        console.log('Email already exists in database');
+        throw new Error('This email is already subscribed!');
+      }
+
       // Submit email to Supabase
       const { error } = await supabase
         .from('email_submissions')
@@ -59,7 +76,7 @@ export const EmailSubscription = () => {
       
       toast({
         title: "Submission Failed ❌",
-        description: "Failed to submit email. Please check your connection and try again.",
+        description: error.message || "Failed to submit email. Please check your connection and try again.",
         variant: "destructive",
       });
     } finally {
