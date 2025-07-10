@@ -94,17 +94,14 @@ export default {
 					},
 				},
 				"shake": {
-					"10%, 90%": {
-						transform: "translate3d(-1px, 0, 0)",
+					"0%, 100%": {
+						transform: "translateX(0)",
 					},
-					"20%, 80%": {
-						transform: "translate3d(2px, 0, 0)",
+					"10%, 30%, 50%, 70%, 90%": {
+						transform: "translateX(-10px)",
 					},
-					"30%, 50%, 70%": {
-						transform: "translate3d(-4px, 0, 0)",
-					},
-					"40%, 60%": {
-						transform: "translate3d(4px, 0, 0)",
+					"20%, 40%, 60%, 80%": {
+						transform: "translateX(10px)",
 					},
 				},
 			},
@@ -112,7 +109,7 @@ export default {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"fade-in-up": "fade-in-up 0.6s ease-out",
-				"shake": "shake 0.82s cubic-bezier(.36,.07,.19,.97) both",
+				"shake": "shake 0.5s ease-in-out infinite",
 			}
 		}
 	},
