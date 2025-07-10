@@ -52,6 +52,9 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'vote-title': 'hsl(var(--vote-title))',
+				'like-button': 'hsl(var(--like-button))',
+				'like-count': 'hsl(var(--like-count))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
