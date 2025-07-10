@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -8,39 +8,29 @@ export const EmailSubscription = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [submittedEmails, setSubmittedEmails] = useState<Set<string>>(
-    new Set(),
-  );
   const { toast } = useToast();
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     console.log('Email form submitted', { email });
     e.preventDefault();
+    
     if (!email) {
       console.log('Email submission blocked: no email provided');
       return;
     }
 
-    // Check for duplicate email
-    if (submittedEmails.has(email.toLowerCase())) {
-      toast({
-        title: "Already Submitted",
-        description: "This email has already been submitted.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
+    setSubmissionStatus('idle');
 
     try {
       console.log('Attempting to submit email to Supabase:', email);
+      
       // Submit email to Supabase
       const { error } = await supabase
         .from('email_submissions')
         .insert([{ 
           email: email.toLowerCase(),
-          ip_address: null, // Could be captured if needed
+          ip_address: null,
           user_agent: navigator.userAgent
         }]);
 
@@ -50,9 +40,7 @@ export const EmailSubscription = () => {
       }
 
       console.log('Email submitted successfully to Supabase');
-      // Add email to submitted set to prevent duplicates
-      setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
-
+      
       // Set success status and clear form
       setSubmissionStatus('success');
       setEmail("");
@@ -62,6 +50,7 @@ export const EmailSubscription = () => {
         description: "Your email has been submitted successfully. Thank you for subscribing!",
         variant: "default",
       });
+
     } catch (error) {
       console.error('Error submitting email:', error);
       
@@ -82,29 +71,6 @@ export const EmailSubscription = () => {
       }, 3000);
     }
   };
-
-  // Load submitted emails from localStorage on component mount
-  useEffect(() => {
-    const savedEmails = localStorage.getItem("submittedEmails");
-    if (savedEmails) {
-      try {
-        setSubmittedEmails(new Set(JSON.parse(savedEmails)));
-      } catch (error) {
-        // Clear invalid localStorage data
-        localStorage.removeItem("submittedEmails");
-      }
-    }
-  }, []);
-
-  // Save submitted emails to localStorage whenever the set changes
-  useEffect(() => {
-    if (submittedEmails.size > 0) {
-      localStorage.setItem(
-        "submittedEmails",
-        JSON.stringify(Array.from(submittedEmails)),
-      );
-    }
-  }, [submittedEmails]);
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 items-center mt-8 sm:mt-12 md:mt-16 px-4">
