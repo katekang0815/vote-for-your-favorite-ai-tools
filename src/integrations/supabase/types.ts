@@ -64,6 +64,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_tool_vote: {
+        Args: { tool_id_param: string }
+        Returns: number
+      }
       increment_tool_vote: {
         Args: { tool_id_param: string }
         Returns: number

@@ -90,9 +90,11 @@ const Index = () => {
       }
     });
 
-    // If toggling to liked state, increment vote in Supabase
-    if (!wasLiked) {
-      try {
+    // Update vote count in Supabase based on like status
+    try {
+      if (!wasLiked) {
+        // Increment vote when liking
+        console.log('Incrementing vote for', toolId);
         const { data, error } = await supabase.rpc('increment_tool_vote', {
           tool_id_param: toolId
         });
@@ -100,12 +102,25 @@ const Index = () => {
         if (error) {
           console.error('Error incrementing vote:', error);
         } else {
-          // Update local vote count
+          console.log('Vote incremented to:', data);
           setVoteCounts(prev => ({ ...prev, [toolId]: data }));
         }
-      } catch (error) {
-        console.error('Error calling increment function:', error);
+      } else {
+        // Decrement vote when unliking
+        console.log('Decrementing vote for', toolId);
+        const { data, error } = await supabase.rpc('decrement_tool_vote', {
+          tool_id_param: toolId
+        });
+
+        if (error) {
+          console.error('Error decrementing vote:', error);
+        } else {
+          console.log('Vote decremented to:', data);
+          setVoteCounts(prev => ({ ...prev, [toolId]: data }));
+        }
       }
+    } catch (error) {
+      console.error('Error updating vote:', error);
     }
   };
 
