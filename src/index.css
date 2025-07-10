@@ -11,7 +11,7 @@ All colors MUST be HSL.
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
-    --card: 220 15% 8%;
+    --card: 0 0% 10%; 
     --card-foreground: 0 0% 98%;
 
     --popover: 220 23% 13%;
@@ -105,7 +105,9 @@ All colors MUST be HSL.
   background-clip: text;
 }
 
-
+.hero-gradient {
+  background: hsl(0 0% 0%);
+}
 
 @layer base {
   * {
