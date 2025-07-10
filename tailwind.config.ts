@@ -97,11 +97,11 @@ export default {
 					"0%, 100%": {
 						transform: "translateX(0)",
 					},
-					"10%, 30%, 50%, 70%, 90%": {
-						transform: "translateX(-10px)",
+					"25%": {
+						transform: "translateX(-15px) rotate(-2deg)",
 					},
-					"20%, 40%, 60%, 80%": {
-						transform: "translateX(10px)",
+					"75%": {
+						transform: "translateX(15px) rotate(2deg)",
 					},
 				},
 			},
@@ -109,7 +109,7 @@ export default {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"fade-in-up": "fade-in-up 0.6s ease-out",
-				"shake": "shake 0.5s ease-in-out infinite",
+				"shake": "shake 0.6s ease-in-out 3",
 			}
 		}
 	},

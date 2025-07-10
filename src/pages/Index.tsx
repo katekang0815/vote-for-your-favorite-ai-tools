@@ -176,10 +176,10 @@ const Index = () => {
           console.log("Adding shake animation to Vote!");
           // Force animation restart by removing and re-adding the class
           typingElement!.classList.remove("animate-shake");
-          // Use requestAnimationFrame for better timing
-          requestAnimationFrame(() => {
-            typingElement!.classList.add("animate-shake");
-          });
+          // Force a reflow to ensure the class removal takes effect
+          typingElement!.offsetHeight;
+          // Add the shake class
+          typingElement!.classList.add("animate-shake");
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
           // Remove shake when starting to delete
           console.log("Removing shake animation");
