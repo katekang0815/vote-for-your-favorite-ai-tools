@@ -74,9 +74,13 @@ export const EmailSubscription = () => {
       // Set error status but keep email in form for retry
       setSubmissionStatus('error');
       
+      const errorMessage = error.message === 'This email is already subscribed!' 
+        ? 'You are already subscribed!' 
+        : 'Failed to submit email. Please check your connection and try again.';
+      
       toast({
         title: "Submission Failed ❌",
-        description: error.message || "Failed to submit email. Please check your connection and try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -155,7 +159,7 @@ export const EmailSubscription = () => {
       )}
       {submissionStatus === 'error' && (
         <div className="text-red-400 text-sm animate-fade-in">
-          ❌ Something went wrong. Please try again.
+          ❌ You are already subscribed!
         </div>
       )}
     </div>
