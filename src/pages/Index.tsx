@@ -91,7 +91,7 @@ const Index = () => {
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12 2xl:gap-16 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto relative z-10 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 2xl:p-16 rounded-2xl mb-16">
           {tools.map((tool) => (
             <ToolCard
               key={tool.id}
