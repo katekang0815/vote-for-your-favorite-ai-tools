@@ -40,8 +40,8 @@ export const EmailSubscription = () => {
       setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
       toast({
-        title: "Success!",
-        description: "Your email has been submitted successfully.",
+        title: "🎉 Successfully Subscribed!",
+        description: "Thank you for subscribing! You'll receive updates about our latest tools and features.",
         variant: "default",
       });
       setEmail("");
@@ -50,10 +50,9 @@ export const EmailSubscription = () => {
       setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
       toast({
-        title: "Submitted!",
-        description:
-          "Your email has been submitted. Please check your spreadsheet to confirm.",
-        variant: "default",
+        title: "⚠️ Submission Error",
+        description: "There was an issue submitting your email. Please try again later.",
+        variant: "destructive",
       });
       setEmail("");
     } finally {
