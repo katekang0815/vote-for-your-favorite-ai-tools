@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const EmailSubscription = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submittedEmails, setSubmittedEmails] = useState<Set<string>>(
     new Set(),
   );
@@ -49,23 +50,36 @@ export const EmailSubscription = () => {
       }
 
       console.log('Email submitted successfully to Supabase');
+      // Add email to submitted set to prevent duplicates
       setSubmittedEmails((prev) => new Set(prev).add(email.toLowerCase()));
 
+      // Set success status and clear form
+      setSubmissionStatus('success');
+      setEmail("");
+
       toast({
-        title: "Success!",
-        description: "Your email has been submitted successfully.",
+        title: "Success! 🎉",
+        description: "Your email has been submitted successfully. Thank you for subscribing!",
         variant: "default",
       });
-      setEmail("");
     } catch (error) {
       console.error('Error submitting email:', error);
+      
+      // Set error status but keep email in form for retry
+      setSubmissionStatus('error');
+      
       toast({
-        title: "Error",
-        description: "Failed to submit email. Please try again.",
+        title: "Submission Failed ❌",
+        description: "Failed to submit email. Please check your connection and try again.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setSubmissionStatus('idle');
+      }, 3000);
     }
   };
 
@@ -118,19 +132,49 @@ export const EmailSubscription = () => {
             type="email"
             placeholder="Enter your email to stay updated"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border-gray-600/50 text-white placeholder-blue-600 rounded-lg focus:border-blue-400 focus:ring-blue-400"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              // Reset status when user starts typing again
+              if (submissionStatus !== 'idle') {
+                setSubmissionStatus('idle');
+              }
+            }}
+            className={`w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border-gray-600/50 text-white placeholder-blue-600 rounded-lg focus:border-blue-400 focus:ring-blue-400 transition-all duration-300 ${
+              submissionStatus === 'success' ? 'border-green-500 focus:border-green-500 focus:ring-green-500' :
+              submissionStatus === 'error' ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
             required
           />
         </div>
         <Button
           type="submit"
-          disabled={isSubmitting}
-          className="bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 hover:from-green-500 hover:via-cyan-500 hover:to-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap"
+          disabled={isSubmitting || !email}
+          className={`px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap ${
+            submissionStatus === 'success' 
+              ? 'bg-green-500 hover:bg-green-600 text-white' 
+              : submissionStatus === 'error'
+              ? 'bg-red-500 hover:bg-red-600 text-white'
+              : 'bg-gradient-to-r from-green-400 via-cyan-400 to-blue-500 hover:from-green-500 hover:via-cyan-500 hover:to-blue-600 text-white'
+          }`}
         >
-          {isSubmitting ? "Submitting..." : "Subscribe"}
+          {isSubmitting ? "Submitting..." : 
+           submissionStatus === 'success' ? "✓ Subscribed!" :
+           submissionStatus === 'error' ? "Try Again" :
+           "Subscribe"}
         </Button>
       </form>
+
+      {/* Status Message */}
+      {submissionStatus === 'success' && (
+        <div className="text-green-400 text-sm animate-fade-in">
+          🎉 Thank you for subscribing! You'll hear from us soon.
+        </div>
+      )}
+      {submissionStatus === 'error' && (
+        <div className="text-red-400 text-sm animate-fade-in">
+          ❌ Something went wrong. Please try again.
+        </div>
+      )}
     </div>
   );
 };
