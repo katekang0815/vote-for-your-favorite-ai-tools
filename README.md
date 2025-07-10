@@ -4,6 +4,9 @@
 
 🔗 [Live Demo](https://vote-for-your-favorite-ai-tools.lovable.app/)
 
+
+(https://img.youtube.com/vi/5WQ23SksHDA/0.jpg)](https://youtube.com/shorts/5WQ23SksHDA)
+
 ---
 
 ## 📌 Overview
