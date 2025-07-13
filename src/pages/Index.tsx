@@ -171,38 +171,17 @@ const Index = () => {
         typingElement!.classList.add("text-3xl", "md:text-4xl", "2xl:text-5xl", "font-bold", "gradient-text");
         typingElement!.classList.remove("text-xl", "md:text-2xl", "2xl:text-3xl", "text-blue-400");
 
-        // Only add shake when "Vote!" is fully typed
-        if (!isDeleting && currentCharIndex === currentText.length) {
-          console.log("Adding direct inline shake animation to Vote!");
+        // Only add shake when "Vote!" is fully typed and not already shaking
+        if (!isDeleting && currentCharIndex === currentText.length && !typingElement!.dataset.shaking) {
+          typingElement!.dataset.shaking = "true";
           
-          // Remove the test styling
-          typingElement!.style.backgroundColor = '';
-          typingElement!.style.padding = '';
-          typingElement!.style.border = '';
-          
-          // Apply direct inline animation using Web Animations API
-          const shakeAnimation = typingElement!.animate([
-            { transform: 'translateX(0px) scale(1)' },
-            { transform: 'translateX(-15px) scale(1.1)' },
-            { transform: 'translateX(15px) scale(1.05)' },
-            { transform: 'translateX(-12px) scale(1.08)' },
-            { transform: 'translateX(12px) scale(1.03)' },
-            { transform: 'translateX(-8px) scale(1.06)' },
-            { transform: 'translateX(8px) scale(1.02)' },
-            { transform: 'translateX(-4px) scale(1.04)' },
-            { transform: 'translateX(4px) scale(1.01)' },
-            { transform: 'translateX(0px) scale(1)' }
-          ], {
-            duration: 800,
-            easing: 'ease-in-out'
-          });
-
-          console.log("Shake animation started:", shakeAnimation);
+          // Apply CSS shake animation directly
+          typingElement!.style.animation = "shake 0.8s ease-in-out infinite";
           
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
           // Reset when starting to delete
-          console.log("Removing shake animation");
-          typingElement!.style.transform = '';
+          typingElement!.style.animation = '';
+          delete typingElement!.dataset.shaking;
         }
       } else {
         // Remove shake and reset size for other text
