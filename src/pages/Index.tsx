@@ -174,20 +174,24 @@ const Index = () => {
         // Only add shake when "Vote!" is fully typed
         if (!isDeleting && currentCharIndex === currentText.length) {
           console.log("Adding shake animation to Vote!");
-          // Force animation restart by removing and re-adding the class
-          typingElement!.classList.remove("animate-shake");
-          // Force a reflow to ensure the class removal takes effect
+          // Remove existing shake classes and force reflow
+          typingElement!.classList.remove("animate-shake", "shake-animation");
           typingElement!.offsetHeight;
-          // Add the shake class
-          typingElement!.classList.add("animate-shake");
+          // Add the CSS shake class
+          typingElement!.classList.add("shake-animation");
+          
+          // Remove shake after animation completes
+          setTimeout(() => {
+            typingElement!.classList.remove("shake-animation");
+          }, 1000);
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
           // Remove shake when starting to delete
           console.log("Removing shake animation");
-          typingElement!.classList.remove("animate-shake");
+          typingElement!.classList.remove("animate-shake", "shake-animation");
         }
       } else {
         // Remove shake and reset size for other text
-        typingElement!.classList.remove("animate-shake", "text-3xl", "md:text-4xl", "2xl:text-5xl", "font-bold");
+        typingElement!.classList.remove("animate-shake", "shake-animation", "text-3xl", "md:text-4xl", "2xl:text-5xl", "font-bold");
         typingElement!.classList.add("text-xl", "md:text-2xl", "2xl:text-3xl", "gradient-text");
       }
 
