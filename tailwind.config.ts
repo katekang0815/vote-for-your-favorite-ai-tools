@@ -93,23 +93,12 @@ export default {
 						transform: "translateY(0)",
 					},
 				},
-				"shake": {
-					"0%, 100%": {
-						transform: "translateX(0)",
-					},
-					"25%": {
-						transform: "translateX(-15px) rotate(-2deg)",
-					},
-					"75%": {
-						transform: "translateX(15px) rotate(2deg)",
-					},
-				},
+			
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
-				"fade-in-up": "fade-in-up 0.6s ease-out",
-				"shake": "shake 0.6s ease-in-out 3",
+				
 			}
 		}
 	},
