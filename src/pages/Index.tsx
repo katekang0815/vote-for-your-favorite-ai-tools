@@ -174,20 +174,26 @@ const Index = () => {
         // Only add shake when "Vote!" is fully typed
         if (!isDeleting && currentCharIndex === currentText.length) {
           console.log("Adding shake animation to Vote!");
-          // Remove existing shake classes and force reflow
-          typingElement!.classList.remove("animate-shake", "shake-animation");
-          typingElement!.offsetHeight;
-          // Add the CSS shake class
-          typingElement!.classList.add("shake-animation");
           
-          // Remove shake after animation completes
-          setTimeout(() => {
-            typingElement!.classList.remove("shake-animation");
-          }, 1000);
+          // Use JavaScript animation for more control
+          let shakeCount = 0;
+          const maxShakes = 20;
+          const shakeInterval = setInterval(() => {
+            if (shakeCount >= maxShakes) {
+              clearInterval(shakeInterval);
+              typingElement!.style.transform = 'translateX(0px) rotate(0deg)';
+              return;
+            }
+            
+            const x = Math.sin(shakeCount * 0.5) * (15 - shakeCount * 0.5);
+            const rotation = Math.sin(shakeCount * 0.3) * (3 - shakeCount * 0.1);
+            typingElement!.style.transform = `translateX(${x}px) rotate(${rotation}deg)`;
+            shakeCount++;
+          }, 50);
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
-          // Remove shake when starting to delete
+          // Reset transform when starting to delete
           console.log("Removing shake animation");
-          typingElement!.classList.remove("animate-shake", "shake-animation");
+          typingElement!.style.transform = 'translateX(0px) rotate(0deg)';
         }
       } else {
         // Remove shake and reset size for other text
