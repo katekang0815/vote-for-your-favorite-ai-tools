@@ -173,36 +173,35 @@ const Index = () => {
 
         // Only add shake when "Vote!" is fully typed
         if (!isDeleting && currentCharIndex === currentText.length) {
-          console.log("Adding bounce shake animation to Vote!");
-          console.log("Element classes before:", typingElement!.className);
-          console.log("Element computed style transform:", window.getComputedStyle(typingElement!).transform);
+          console.log("Adding direct inline shake animation to Vote!");
           
-          // Try a very obvious visual change first
-          typingElement!.style.backgroundColor = 'red';
-          typingElement!.style.padding = '10px';
-          typingElement!.style.border = '3px solid yellow';
+          // Remove the test styling
+          typingElement!.style.backgroundColor = '';
+          typingElement!.style.padding = '';
+          typingElement!.style.border = '';
           
-          // Remove any existing animation classes
-          typingElement!.classList.remove("bounce-shake");
-          // Force reflow
-          typingElement!.offsetHeight;
-          // Add the new bounce shake class
-          typingElement!.classList.add("bounce-shake");
+          // Apply direct inline animation using Web Animations API
+          const shakeAnimation = typingElement!.animate([
+            { transform: 'translateX(0px) scale(1)' },
+            { transform: 'translateX(-15px) scale(1.1)' },
+            { transform: 'translateX(15px) scale(1.05)' },
+            { transform: 'translateX(-12px) scale(1.08)' },
+            { transform: 'translateX(12px) scale(1.03)' },
+            { transform: 'translateX(-8px) scale(1.06)' },
+            { transform: 'translateX(8px) scale(1.02)' },
+            { transform: 'translateX(-4px) scale(1.04)' },
+            { transform: 'translateX(4px) scale(1.01)' },
+            { transform: 'translateX(0px) scale(1)' }
+          ], {
+            duration: 800,
+            easing: 'ease-in-out'
+          });
+
+          console.log("Shake animation started:", shakeAnimation);
           
-          console.log("Element classes after:", typingElement!.className);
-          
-          // Remove the animation class after it completes
-          setTimeout(() => {
-            typingElement!.classList.remove("bounce-shake");
-            typingElement!.style.backgroundColor = '';
-            typingElement!.style.padding = '';
-            typingElement!.style.border = '';
-            console.log("Removed shake animation");
-          }, 1200);
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
           // Reset when starting to delete
           console.log("Removing shake animation");
-          typingElement!.classList.remove("bounce-shake");
           typingElement!.style.transform = '';
         }
       } else {
