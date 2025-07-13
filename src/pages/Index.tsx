@@ -174,6 +174,13 @@ const Index = () => {
         // Only add shake when "Vote!" is fully typed
         if (!isDeleting && currentCharIndex === currentText.length) {
           console.log("Adding bounce shake animation to Vote!");
+          console.log("Element classes before:", typingElement!.className);
+          console.log("Element computed style transform:", window.getComputedStyle(typingElement!).transform);
+          
+          // Try a very obvious visual change first
+          typingElement!.style.backgroundColor = 'red';
+          typingElement!.style.padding = '10px';
+          typingElement!.style.border = '3px solid yellow';
           
           // Remove any existing animation classes
           typingElement!.classList.remove("bounce-shake");
@@ -182,9 +189,15 @@ const Index = () => {
           // Add the new bounce shake class
           typingElement!.classList.add("bounce-shake");
           
+          console.log("Element classes after:", typingElement!.className);
+          
           // Remove the animation class after it completes
           setTimeout(() => {
             typingElement!.classList.remove("bounce-shake");
+            typingElement!.style.backgroundColor = '';
+            typingElement!.style.padding = '';
+            typingElement!.style.border = '';
+            console.log("Removed shake animation");
           }, 1200);
         } else if (isDeleting && currentCharIndex === currentText.length - 1) {
           // Reset when starting to delete
