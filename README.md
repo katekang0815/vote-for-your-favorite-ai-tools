@@ -30,7 +30,7 @@ Vibe Toolkit enables users to easily track and express their preferences for AI 
 
 
 
-## 🔧 Technologies Used
+## 🔧 Technologies
 
 - React.js
 - Replit hosting
