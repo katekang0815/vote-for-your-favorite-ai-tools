@@ -4,6 +4,8 @@
 
 🔗 [Live Demo](https://vote-for-your-favorite-ai-tools.lovable.app/)
 
+<img width="1051" height="861" alt="Screenshot 2025-10-17 at 3 28 29 PM" src="https://github.com/user-attachments/assets/bf51c464-201a-4769-a6cf-79d03660457e" />
+
 ---
 
 ## 📌 Overview
